@@ -10,6 +10,13 @@ public class BallCanvas extends JPanel {
     public void add(Ball b) {
         this.balls.add(b);
         Thread t = new Thread(b);
+        t.setPriority(
+                switch (b.priority) {
+                    case ANY -> Thread.NORM_PRIORITY;
+                    case LOW -> Thread.MIN_PRIORITY;
+                    case HIGH -> Thread.MAX_PRIORITY;
+                }
+        );
         t.start();
         threads.add(t);
         repaint();

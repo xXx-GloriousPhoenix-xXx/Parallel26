@@ -53,6 +53,8 @@ class Ball implements Runnable {
     }
 
     public void draw(Graphics2D g2) {
+        if (isScored) return;
+
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -60,8 +62,8 @@ class Ball implements Runnable {
         Color darkColor = color.darker();
 
         GradientPaint gradient = new GradientPaint(
-                (float)x, (float)y, lightColor,
-                (float)(x + XSIZE), (float)(y + YSIZE), darkColor,
+                (float) x, (float) y, lightColor,
+                (float) (x + XSIZE), (float) (y + YSIZE), darkColor,
                 true
         );
 
@@ -71,6 +73,9 @@ class Ball implements Runnable {
         g2.setColor(darkColor);
         g2.setStroke(new BasicStroke(1.0f));
         g2.draw(new Ellipse2D.Double(x, y, XSIZE, YSIZE));
+
+        g2.setColor(new Color(255, 255, 255, 150));
+        g2.fillOval((int) x + 5, (int) y + 5, 6, 6);
     }
 
     public void move() {

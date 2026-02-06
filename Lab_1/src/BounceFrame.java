@@ -51,11 +51,15 @@ public class BounceFrame extends JFrame {
         JButton clear = styler.StyleButton(new JButton("Очистити"));
         clear.addActionListener(_ -> handleClear());
 
+        JButton priority = styler.StyleButton(new JButton("Пріоритет-тест"));
+        priority.addActionListener(_ -> handlePriorityTest());
+
         buttonPanel.add(addOne);
         buttonPanel.add(addMultiple);
         buttonPanel.add(pause);
         buttonPanel.add(resume);
         buttonPanel.add(clear);
+        buttonPanel.add(priority);
 
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -94,4 +98,17 @@ public class BounceFrame extends JFrame {
         pause.setEnabled(false);
     }
 
+    public void handlePriorityTest() {
+        handleClear();
+
+        var redBall = new Ball(canvas, BALL_PRIORITY.HIGH, isRunning);
+        canvas.add(redBall);
+
+        for (int i = 0; i < 1000; i++) {
+            var blueBall = new Ball(canvas, BALL_PRIORITY.LOW, isRunning);
+            canvas.add(blueBall);
+        }
+
+        handleResume();
+    }
 }
