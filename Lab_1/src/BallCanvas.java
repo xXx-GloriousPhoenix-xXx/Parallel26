@@ -18,7 +18,6 @@ public class BallCanvas extends JPanel {
     @Override
     public void doLayout() {
         super.doLayout();
-        // Пересоздаём лунки при каждом изменении размера
         if (getWidth() > 0 && getHeight() > 0) {
             if (lastWidth != getWidth() || lastHeight != getHeight()) {
                 createHoles();
@@ -33,13 +32,11 @@ public class BallCanvas extends JPanel {
             holes.clear();
             int margin = 5;
 
-            // Угловые лунки
             holes.add(new Hole(margin, margin));
             holes.add(new Hole(getWidth() - Hole.SIZE - margin, margin));
             holes.add(new Hole(margin, getHeight() - Hole.SIZE - margin));
             holes.add(new Hole(getWidth() - Hole.SIZE - margin, getHeight() - Hole.SIZE - margin));
 
-            // Средние лунки
             holes.add(new Hole(getWidth() / 2.0 - Hole.SIZE / 2.0, margin));
             holes.add(new Hole(getWidth() / 2.0 - Hole.SIZE / 2.0, getHeight() - Hole.SIZE - margin));
         }

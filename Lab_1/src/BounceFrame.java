@@ -3,8 +3,8 @@ import java.awt.*;
 
 public class BounceFrame extends JFrame {
     private final BallCanvas canvas;
-    public static final int WIDTH = 450;
-    public static final int HEIGHT = 350;
+    public static final int WIDTH = 1200;
+    public static final int HEIGHT = 800;
     private static final int PADDING = 20;
 
     private final JButton resume;
@@ -30,15 +30,6 @@ public class BounceFrame extends JFrame {
         canvasPanel.setBorder(BorderFactory.createEmptyBorder( PADDING, PADDING, 0, PADDING ));
         canvasPanel.add(canvas, BorderLayout.CENTER);
         add(canvasPanel, BorderLayout.CENTER);
-
-        // ===== Score Panel =====
-//        JPanel scorePanel = new JPanel();
-//        scorePanel.setBackground(brown);
-//        scoreLabel = new JLabel("Забито м'ячів: 0");
-//        scoreLabel.setForeground(Color.WHITE);
-//        scoreLabel.setFont(new Font("Arial", Font.BOLD, 14));
-//        scorePanel.add(scoreLabel);
-//        add(scorePanel, BorderLayout.NORTH);
 
         // ===== Buttons =====
         JPanel buttonPanel = new JPanel();
