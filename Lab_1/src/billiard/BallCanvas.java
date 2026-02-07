@@ -1,3 +1,5 @@
+package billiard;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -123,5 +125,32 @@ public class BallCanvas extends JPanel {
         for (Ball ball : balls) {
             ball.draw(g2);
         }
+    }
+
+    public void joinTest() {
+        new Thread(() -> {
+            var redBall = new Ball(this, BALL_PRIORITY.HIGH, true);
+            var blueBall = new Ball(this, BALL_PRIORITY.LOW, true);
+
+            var redThread = new Thread(redBall);
+            var blueThread = new Thread(blueBall);
+
+            balls.add(redBall);
+            threads.add(redThread);
+            redThread.start();
+
+            try {
+                redThread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+
+            balls.add(blueBall);
+            threads.add(blueThread);
+            blueThread.start();
+
+            SwingUtilities.invokeLater(this::repaint);
+        }).start();
     }
 }

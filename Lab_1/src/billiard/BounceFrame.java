@@ -1,3 +1,5 @@
+package billiard;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -57,6 +59,9 @@ public class BounceFrame extends JFrame {
 
         scoreLabel = styler.StyleLabel(new JLabel("0"));
 
+        JButton join = styler.StyleButton(new JButton("Join-тест"));
+        join.addActionListener(_ -> handleJoinTest());
+
         buttonPanel.add(addOne);
         buttonPanel.add(addMultiple);
         buttonPanel.add(pause);
@@ -64,6 +69,7 @@ public class BounceFrame extends JFrame {
         buttonPanel.add(clear);
         buttonPanel.add(priority);
         buttonPanel.add(scoreLabel);
+        buttonPanel.add(join);
 
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -123,5 +129,11 @@ public class BounceFrame extends JFrame {
         }
 
         handleResume();
+    }
+
+    public void handleJoinTest() {
+        handleClear();
+        handleResume();
+        canvas.joinTest();
     }
 }

@@ -1,3 +1,5 @@
+package billiard;
+
 import javax.swing.*;
 import java.awt.*;
 

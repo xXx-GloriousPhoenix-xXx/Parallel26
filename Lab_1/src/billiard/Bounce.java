@@ -1,3 +1,5 @@
+import billiard.BounceFrame;
+
 import javax.swing.*;
 
 void main() {
