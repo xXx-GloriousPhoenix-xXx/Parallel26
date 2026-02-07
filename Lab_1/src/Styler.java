@@ -23,4 +23,18 @@ public class Styler {
 
         return button;
     }
+    public JLabel StyleLabel(JLabel label) {
+        label.setOpaque(true);
+        label.setBackground(green);
+        label.setForeground(brown);
+
+        label.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(green, 1),
+                BorderFactory.createEmptyBorder(6, 12, 6, 12)
+        ));
+
+        label.setFont(new Font("Times New Roman", Font.BOLD, 14));
+
+        return label;
+    }
 }

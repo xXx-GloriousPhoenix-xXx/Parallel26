@@ -4,7 +4,7 @@ import java.awt.geom.Ellipse2D;
 public class Hole {
     private final double x;
     private final double y;
-    public static final int SIZE = 30;
+    public static final int SIZE = 40;
     private static final int RADIUS = SIZE / 2;
 
     public Hole(double x, double y) {

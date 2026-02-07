@@ -32,13 +32,13 @@ public class BounceFrame extends JFrame {
         add(canvasPanel, BorderLayout.CENTER);
 
         // ===== Score Panel =====
-        JPanel scorePanel = new JPanel();
-        scorePanel.setBackground(brown);
-        scoreLabel = new JLabel("Забито м'ячів: 0");
-        scoreLabel.setForeground(Color.WHITE);
-        scoreLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        scorePanel.add(scoreLabel);
-        add(scorePanel, BorderLayout.NORTH);
+//        JPanel scorePanel = new JPanel();
+//        scorePanel.setBackground(brown);
+//        scoreLabel = new JLabel("Забито м'ячів: 0");
+//        scoreLabel.setForeground(Color.WHITE);
+//        scoreLabel.setFont(new Font("Arial", Font.BOLD, 14));
+//        scorePanel.add(scoreLabel);
+//        add(scorePanel, BorderLayout.NORTH);
 
         // ===== Buttons =====
         JPanel buttonPanel = new JPanel();
@@ -64,12 +64,15 @@ public class BounceFrame extends JFrame {
         JButton priority = styler.StyleButton(new JButton("Пріоритет-тест"));
         priority.addActionListener(_ -> handlePriorityTest());
 
+        scoreLabel = styler.StyleLabel(new JLabel("0"));
+
         buttonPanel.add(addOne);
         buttonPanel.add(addMultiple);
         buttonPanel.add(pause);
         buttonPanel.add(resume);
         buttonPanel.add(clear);
         buttonPanel.add(priority);
+        buttonPanel.add(scoreLabel);
 
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -80,7 +83,7 @@ public class BounceFrame extends JFrame {
 
     private void startScoreUpdater() {
         Timer timer = new Timer(100, _ ->
-                scoreLabel.setText("Забито м'ячів: " + canvas.getScoredBalls())
+                scoreLabel.setText(canvas.getScoredBalls() + "")
         );
         timer.start();
     }

@@ -9,33 +9,41 @@ public class BallCanvas extends JPanel {
     private final ArrayList<Thread> threads = new ArrayList<>();
     private final ArrayList<Hole> holes = new ArrayList<>();
     private int scoredBalls = 0;
+    private int lastWidth = 0;
+    private int lastHeight = 0;
 
     public BallCanvas() {
-        initializeHoles();
-    }
-
-    private void initializeHoles() {
     }
 
     @Override
     public void doLayout() {
         super.doLayout();
-        if (holes.isEmpty() && getWidth() > 0 && getHeight() > 0) {
-            createHoles();
+        // Пересоздаём лунки при каждом изменении размера
+        if (getWidth() > 0 && getHeight() > 0) {
+            if (lastWidth != getWidth() || lastHeight != getHeight()) {
+                createHoles();
+                lastWidth = getWidth();
+                lastHeight = getHeight();
+            }
         }
     }
 
     private void createHoles() {
-        holes.clear();
-        int margin = 5;
+        synchronized (holes) {
+            holes.clear();
+            int margin = 5;
 
-        holes.add(new Hole(margin, margin));
-        holes.add(new Hole(getWidth() - Hole.SIZE - margin, margin));
-        holes.add(new Hole(margin, getHeight() - Hole.SIZE - margin));
-        holes.add(new Hole(getWidth() - Hole.SIZE - margin, getHeight() - Hole.SIZE - margin));
+            // Угловые лунки
+            holes.add(new Hole(margin, margin));
+            holes.add(new Hole(getWidth() - Hole.SIZE - margin, margin));
+            holes.add(new Hole(margin, getHeight() - Hole.SIZE - margin));
+            holes.add(new Hole(getWidth() - Hole.SIZE - margin, getHeight() - Hole.SIZE - margin));
 
-        holes.add(new Hole(getWidth() / 2.0 - Hole.SIZE / 2.0, margin));
-        holes.add(new Hole(getWidth() / 2.0 - Hole.SIZE / 2.0, getHeight() - Hole.SIZE - margin));
+            // Средние лунки
+            holes.add(new Hole(getWidth() / 2.0 - Hole.SIZE / 2.0, margin));
+            holes.add(new Hole(getWidth() / 2.0 - Hole.SIZE / 2.0, getHeight() - Hole.SIZE - margin));
+        }
+        repaint();
     }
 
     public void add(Ball b) {
@@ -58,14 +66,16 @@ public class BallCanvas extends JPanel {
     public void checkHoleCollisions(Ball ball) {
         if (ball.isScored) return;
 
-        for (Hole hole : holes) {
-            if (hole.checkCollision(ball)) {
-                ball.score();
-                synchronized (this) {
-                    scoredBalls++;
+        synchronized (holes) {
+            for (Hole hole : holes) {
+                if (hole.checkCollision(ball)) {
+                    ball.score();
+                    synchronized (this) {
+                        scoredBalls++;
+                    }
+                    repaint();
+                    break;
                 }
-                repaint();
-                break;
             }
         }
     }
@@ -107,8 +117,10 @@ public class BallCanvas extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
 
-        for (Hole hole : holes) {
-            hole.draw(g2);
+        synchronized (holes) {
+            for (Hole hole : holes) {
+                hole.draw(g2);
+            }
         }
 
         for (Ball ball : balls) {
