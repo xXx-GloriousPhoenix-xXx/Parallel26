@@ -3,7 +3,7 @@ import java.awt.geom.Ellipse2D;
 import java.util.Random;
 
 class Ball implements Runnable {
-    private final Component canvas;
+    private final BallCanvas canvas;
     public static final int XSIZE = 20;
     public static final int YSIZE = 20;
     private double x;
@@ -12,8 +12,8 @@ class Ball implements Runnable {
     private double dy;
     private final Color color;
     public final BALL_PRIORITY priority;
-    public boolean isScored = false;
-    private boolean isRunning;
+    public volatile boolean isScored = false;
+    private volatile boolean isRunning;
 
     public double getX() {
         return x;
@@ -23,7 +23,7 @@ class Ball implements Runnable {
         return y;
     }
 
-    public Ball (Component c, BALL_PRIORITY priority, boolean isRunning) {
+    public Ball (BallCanvas c, BALL_PRIORITY priority, boolean isRunning) {
         this.canvas = c;
         double width = canvas.getWidth();
         double height = canvas.getHeight();
@@ -79,7 +79,7 @@ class Ball implements Runnable {
     }
 
     public void move() {
-        if (!isRunning) return;
+        if (!isRunning || isScored) return;
 
         x += dx;
         y += dy;
@@ -107,15 +107,21 @@ class Ball implements Runnable {
         this.canvas.repaint();
     }
 
+    public void score() {
+        isScored = true;
+    }
+
     @Override
     public void run() {
         try {
-            while (!isScored) {
+            while (!isScored && !Thread.currentThread().isInterrupted()) {
                 move();
+                canvas.checkHoleCollisions(this);
                 Thread.sleep(5);
             }
         }
-        catch (InterruptedException _) {}
+        catch (InterruptedException _) {
+        }
     }
 
     public void resume() {
@@ -126,4 +132,3 @@ class Ball implements Runnable {
         isRunning = false;
     }
 }
-

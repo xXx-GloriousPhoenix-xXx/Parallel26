@@ -9,6 +9,7 @@ public class BounceFrame extends JFrame {
 
     private final JButton resume;
     private final JButton pause;
+    private final JLabel scoreLabel;
 
     private static boolean isRunning;
 
@@ -29,6 +30,15 @@ public class BounceFrame extends JFrame {
         canvasPanel.setBorder(BorderFactory.createEmptyBorder( PADDING, PADDING, 0, PADDING ));
         canvasPanel.add(canvas, BorderLayout.CENTER);
         add(canvasPanel, BorderLayout.CENTER);
+
+        // ===== Score Panel =====
+        JPanel scorePanel = new JPanel();
+        scorePanel.setBackground(brown);
+        scoreLabel = new JLabel("Забито м'ячів: 0");
+        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        scorePanel.add(scoreLabel);
+        add(scorePanel, BorderLayout.NORTH);
 
         // ===== Buttons =====
         JPanel buttonPanel = new JPanel();
@@ -64,6 +74,15 @@ public class BounceFrame extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
 
         handlePause();
+
+        startScoreUpdater();
+    }
+
+    private void startScoreUpdater() {
+        Timer timer = new Timer(100, _ ->
+                scoreLabel.setText("Забито м'ячів: " + canvas.getScoredBalls())
+        );
+        timer.start();
     }
 
     public void handleAddSingle() {

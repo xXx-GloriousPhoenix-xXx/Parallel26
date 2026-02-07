@@ -1,11 +1,42 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BallCanvas extends JPanel {
-    private final ArrayList<Ball> balls = new ArrayList<>();
+    private final List<Ball> balls = new CopyOnWriteArrayList<>();
     private final ArrayList<Thread> threads = new ArrayList<>();
-//    private final ArrayList<Hole> holes = new ArrayList<>();
+    private final ArrayList<Hole> holes = new ArrayList<>();
+    private int scoredBalls = 0;
+
+    public BallCanvas() {
+        initializeHoles();
+    }
+
+    private void initializeHoles() {
+    }
+
+    @Override
+    public void doLayout() {
+        super.doLayout();
+        if (holes.isEmpty() && getWidth() > 0 && getHeight() > 0) {
+            createHoles();
+        }
+    }
+
+    private void createHoles() {
+        holes.clear();
+        int margin = 5;
+
+        holes.add(new Hole(margin, margin));
+        holes.add(new Hole(getWidth() - Hole.SIZE - margin, margin));
+        holes.add(new Hole(margin, getHeight() - Hole.SIZE - margin));
+        holes.add(new Hole(getWidth() - Hole.SIZE - margin, getHeight() - Hole.SIZE - margin));
+
+        holes.add(new Hole(getWidth() / 2.0 - Hole.SIZE / 2.0, margin));
+        holes.add(new Hole(getWidth() / 2.0 - Hole.SIZE / 2.0, getHeight() - Hole.SIZE - margin));
+    }
 
     public void add(Ball b) {
         this.balls.add(b);
@@ -18,8 +49,25 @@ public class BallCanvas extends JPanel {
                 }
         );
         t.start();
-        threads.add(t);
+        synchronized (threads) {
+            threads.add(t);
+        }
         repaint();
+    }
+
+    public void checkHoleCollisions(Ball ball) {
+        if (ball.isScored) return;
+
+        for (Hole hole : holes) {
+            if (hole.checkCollision(ball)) {
+                ball.score();
+                synchronized (this) {
+                    scoredBalls++;
+                }
+                repaint();
+                break;
+            }
+        }
     }
 
     public void resume() {
@@ -37,12 +85,21 @@ public class BallCanvas extends JPanel {
     }
 
     public void clear() {
-        for (var t : threads) {
-            t.interrupt();
+        synchronized (threads) {
+            for (var t : threads) {
+                t.interrupt();
+            }
+            threads.clear();
         }
-        threads.clear();
         balls.clear();
+        synchronized (this) {
+            scoredBalls = 0;
+        }
         repaint();
+    }
+
+    public synchronized int getScoredBalls() {
+        return scoredBalls;
     }
 
     @Override
@@ -50,10 +107,12 @@ public class BallCanvas extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
 
-        for (Ball b : balls) {
-            b.draw(g2);
+        for (Hole hole : holes) {
+            hole.draw(g2);
+        }
+
+        for (Ball ball : balls) {
+            ball.draw(g2);
         }
     }
-
-
 }
