@@ -1,7 +1,7 @@
 package counter;
 
 public class CounterTest {
-    public void main(String[] args) {
+    void main(String[] args) {
         var n = 100_000;
 
         System.out.println("=== Тест 1: Unsafe ===");
@@ -17,7 +17,7 @@ public class CounterTest {
         handleTest(n, TestCase.SyncLock);
     }
 
-    public static void handleTest(int n, TestCase tc) {
+    private static void handleTest(int n, TestCase tc) {
         var counter = new Counter();
 
         Runnable inc = getOperation(counter, tc, true);

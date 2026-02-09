@@ -1,8 +1,11 @@
 package counter;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Counter {
     private int value = 0;
-    private final Object lock = new Object();
+    private final Lock lock = new ReentrantLock();
 
     public void unsafeIncrement() { value++; }
     public void unsafeDecrement() { value--; }
@@ -22,13 +25,21 @@ public class Counter {
     }
 
     public void synchronizedLockIncrement() {
-        synchronized (lock) {
+        lock.lock();
+        try {
             value++;
+        }
+        finally {
+            lock.unlock();
         }
     }
     public void synchronizedLockDecrement() {
-        synchronized (lock) {
+        lock.lock();
+        try {
             value--;
+        }
+        finally {
+            lock.unlock();
         }
     }
 
