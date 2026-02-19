@@ -105,8 +105,8 @@ public class PerformanceTest {
         if (methodName.contains("ФОКСА")) {
             int q = (int) Math.sqrt(threads);
             return q * q == threads && size % q == 0;
-        } else { // ленточное умножение
-            return threads <= size; // для ленточного умножения нужно не больше потоков чем размер
+        } else {
+            return threads <= size;
         }
     }
 
