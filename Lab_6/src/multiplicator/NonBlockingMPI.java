@@ -70,10 +70,6 @@ public class NonBlockingMPI {
             offset += rows;
         }
         Request.Waitall(receiveRequests);
-
-        print(A);
-        print(B);
-        print(C);
     }
 
     static void runWorker() {
@@ -88,26 +84,18 @@ public class NonBlockingMPI {
         var rB = MPI.COMM_WORLD.Irecv(B, 0, SIZE, MPI.OBJECT, MASTER, 102);
         Request.Waitall(new Request[] { rA, rB });
 
-        var localC = new int[rows][SIZE];
-        for (var row = 0; row < rows; row++) {
-            for (var i = 0; i < SIZE; i++) {
-                for (var j = 0; j < SIZE; j++) {
-                    localC[row][i] += localA[row][j] * B[j][i];
-                }
-            }
-        }
+//        var localC = new int[rows][SIZE];
+//        for (var row = 0; row < rows; row++) {
+//            for (var i = 0; i < SIZE; i++) {
+//                for (var j = 0; j < SIZE; j++) {
+//                    localC[row][i] += localA[row][j] * B[j][i];
+//                }
+//            }
+//        }
+        var localC = MatrixHelper.multiply(localA, B);
 
         var sR = MPI.COMM_WORLD.Isend(new int[] { rows }, 0, 1, MPI.INT, MASTER, 103);
         var sC = MPI.COMM_WORLD.Isend(localC, 0, rows, MPI.OBJECT, MASTER, 104);
         Request.Waitall(new Request[] { sR, sC });
-    }
-
-    static void print(int[][] matrix) {
-        for (var row : matrix) {
-            for (var col : row) {
-                System.out.format("%d ", col);
-            }
-            System.out.println();
-        }
     }
 }
