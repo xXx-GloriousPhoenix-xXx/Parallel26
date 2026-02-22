@@ -4,10 +4,7 @@ import factory.MatrixGenerator;
 import mpi.MPI;
 import mpi.Request;
 
-public class NonBlockingMPI {
-    private static final int MASTER = 0;
-    private static final int SIZE = 3, MAX = 100, MIN = 0;
-
+public class NonBlockingMPI extends MatrixMPI {
     public static void main(String[] args) {
         MPI.Init(args);
 

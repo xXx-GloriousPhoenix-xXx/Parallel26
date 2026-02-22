@@ -3,17 +3,7 @@ package multiplicator;
 import factory.*;
 import mpi.*;
 
-import java.util.stream.IntStream;
-
-public class BlockingMPI {
-    private static final int MASTER = 0;
-    private static final int MIN = 1, MAX = 100;
-    private static final int[] SIZES = IntStream
-            .iterate(500, i -> i + 500)
-            .limit(6)
-            .toArray();
-    private static final int REPEATS = 10;
-
+public class BlockingMPI extends MatrixMPI {
     public static void main(String[] args) {
         MPI.Init(args);
 
