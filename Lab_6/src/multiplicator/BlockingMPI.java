@@ -91,14 +91,6 @@ public class BlockingMPI extends MatrixMPI {
                 MPI.COMM_WORLD.Recv(localA, 0, rows, MPI.OBJECT, MASTER, 101);
                 MPI.COMM_WORLD.Recv(B, 0, SIZE, MPI.OBJECT, MASTER, 102);
 
-//                var localC = new int[rows][SIZE];
-//                for (var row = 0; row < rows; row++) {
-//                    for (var i = 0; i < SIZE; i++) {
-//                        for (var j = 0; j < SIZE; j++) {
-//                            localC[row][i] += localA[row][j] * B[j][i];
-//                        }
-//                    }
-//                }
                 var localC = MatrixHelper.multiply(localA, B);
 
                 MPI.COMM_WORLD.Send(new int[] { rows }, 0, 1, MPI.INT, MASTER, 103);
