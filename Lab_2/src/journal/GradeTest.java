@@ -33,10 +33,23 @@ class GradeTest {
                 "Ім`я 4"
         );
 
-        new Thread(teacher).start();
-        new Thread(assistant1).start();
-        new Thread(assistant2).start();
-        new Thread(assistant3).start();
-        new Thread(journal).start();
+        var threads = new Thread[] {
+            new Thread(teacher),
+            new Thread(assistant1),
+            new Thread(assistant2),
+            new Thread(assistant3),
+            new Thread(journal)
+        };
+
+        for (var t : threads) {
+            t.start();
+        }
+
+        try {
+            for (var t : threads) {
+                t.join();
+            }
+        }
+        catch (InterruptedException _) {}
     }
 }

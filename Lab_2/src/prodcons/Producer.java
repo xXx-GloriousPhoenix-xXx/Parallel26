@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Producer implements Runnable {
     private final Drop drop;
-    private static final int ITEMS = 1000;
+    private static final int ITEMS = 100;
     private static final int MAX_VALUE = 1000;
     private static final int DELAY = 50;
 

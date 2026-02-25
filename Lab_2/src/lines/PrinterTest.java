@@ -1,31 +1,39 @@
 package lines;
 
 public class PrinterTest {
-    private final int repeats_of_lines = 90;
-    private final int repeats_per_line = 60;
+    private static final int repeats_of_lines = 90;
+    private static final int repeats_per_line = 60;
     void main() {
-        var isSynced = true;
+        test(false);
+        test(true);
+    }
+
+    void test(boolean isSynced) {
+        Printer p;
         if (isSynced) {
-            testSync();
+            System.out.println("===== Sync =====");
+            p = new SyncPrinter(repeats_of_lines, repeats_per_line);
         }
         else {
-            testUnsync();
+            System.out.println("===== Unsync =====");
+            p = new UnsyncPrinter(repeats_of_lines, repeats_per_line);
         }
-    }
 
-    void testUnsync() {
-        System.out.println("===== Unsync =====");
-        var unsyncPrinter = new UnsyncPrinter(repeats_of_lines, repeats_per_line);
-        new Thread(unsyncPrinter::printStraight).start();
-        new Thread(unsyncPrinter::printBackward).start();
-        new Thread(unsyncPrinter::printForward).start();
-    }
+        var threads = new Thread[] {
+            new Thread(p::printStraight),
+            new Thread(p::printBackward),
+            new Thread(p::printForward)
+        };
 
-    void testSync() {
-        System.out.println("===== Sync =====");
-        var syncPrinter = new SyncPrinter(repeats_of_lines, repeats_per_line);
-        new Thread(syncPrinter::printStraight).start();
-        new Thread(syncPrinter::printBackward).start();
-        new Thread(syncPrinter::printForward).start();
+        for (var t : threads) {
+            t.start();
+        }
+
+        try {
+            for (var t : threads) {
+                t.join();
+            }
+        }
+        catch (InterruptedException _) {}
     }
 }

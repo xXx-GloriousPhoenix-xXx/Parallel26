@@ -3,7 +3,6 @@ package journal;
 import org.w3c.dom.ranges.RangeException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class DataFactory {
