@@ -40,7 +40,7 @@ public class QueueSimulation implements Callable<SimulationResult> {
     }
 
     private double exponential(double mean) {
-        Random rng = (seed != null) ? new Random(seed) : ThreadLocalRandom.current();
+        var rng = (seed != null) ? new Random(seed) : ThreadLocalRandom.current();
         return -mean * Math.log(1 - rng.nextDouble());
     }
 
@@ -48,14 +48,14 @@ public class QueueSimulation implements Callable<SimulationResult> {
     public SimulationResult call() throws Exception {
         var serverPool = Executors.newFixedThreadPool(numServers);
 
-        for (int i = 0; i < numServers; i++) {
+        for (var i = 0; i < numServers; i++) {
             serverPool.submit(this::serverTask);
         }
 
-        Thread generatorThread = new Thread(this::generateArrivals);
+        var generatorThread = new Thread(this::generateArrivals);
         generatorThread.start();
 
-        Thread samplingThread = new Thread(this::samplingTask);
+        var samplingThread = new Thread(this::samplingTask);
         samplingThread.start();
 
         Thread monitorThread = null;
@@ -82,17 +82,17 @@ public class QueueSimulation implements Callable<SimulationResult> {
             monitorThread.join();
         }
 
-        double avgQueueLength = (sampleCount == 0) ? 0 : (double) sumQueueLength / sampleCount;
-        long totalArr = totalArrivals.get();
-        long totalRej = totalRejected.get();
-        double rejectionProb = (totalArr == 0) ? 0 : (double) totalRej / totalArr;
+        var avgQueueLength = (sampleCount == 0) ? 0 : (double) sumQueueLength / sampleCount;
+        var totalArr = totalArrivals.get();
+        var totalRej = totalRejected.get();
+        var rejectionProb = (totalArr == 0) ? 0 : (double) totalRej / totalArr;
 
         return new SimulationResult(avgQueueLength, rejectionProb, totalArr, totalRej);
     }
 
     private void generateArrivals() {
-        for (int i = 0; i < numArrivals; i++) {
-            double interArrival = exponential(1.0 / arrivalRate);
+        for (var i = 0; i < numArrivals; i++) {
+            var interArrival = exponential(1.0 / arrivalRate);
             try {
                 Thread.sleep((long) interArrival);
             } catch (InterruptedException e) {
@@ -118,7 +118,7 @@ public class QueueSimulation implements Callable<SimulationResult> {
             }
 
             if (customer != null) {
-                double serviceTime = exponential(1.0 / serviceRate);
+                var serviceTime = exponential(1.0 / serviceRate);
                 try {
                     Thread.sleep((long) serviceTime);
                 } catch (InterruptedException e) {
@@ -142,7 +142,7 @@ public class QueueSimulation implements Callable<SimulationResult> {
                 Thread.currentThread().interrupt();
                 break;
             }
-            int currentSize = queue.size();
+            var currentSize = queue.size();
             sumQueueLength += currentSize;
             sampleCount++;
         }

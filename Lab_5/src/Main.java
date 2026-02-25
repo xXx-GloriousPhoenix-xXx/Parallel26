@@ -18,7 +18,7 @@ void runSingle(int servers, int capacity, double lambda, double mu, int arrivals
     var singleRun = new QueueSimulation(
             servers, capacity, lambda, mu, arrivalsPerRun,
             42L,
-            false,
+            true,
             1);
     var result = singleRun.call();
     System.out.printf("Середня довжина черги: %.3f\n", result.avgQueueLength());

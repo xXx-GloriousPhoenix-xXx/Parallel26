@@ -29,10 +29,10 @@ public class ParallelSimulationRunner {
     }
 
     public void run() throws InterruptedException, ExecutionException {
-        ExecutorService pool = Executors.newFixedThreadPool(parallelThreads);
+        var pool = Executors.newFixedThreadPool(parallelThreads);
         List<Future<SimulationResult>> futures = new ArrayList<>();
 
-        for (int run = 0; run < numRuns; run++) {
+        for (var run = 0; run < numRuns; run++) {
             Long seed = (long) run;
             QueueSimulation sim = new QueueSimulation(
                     numServers, queueCapacity, arrivalRate, serviceRate,
@@ -50,27 +50,27 @@ public class ParallelSimulationRunner {
             pool.shutdownNow();
         }
 
-        int n = results.size();
-        double sumQueue = 0.0;
-        double sumReject = 0.0;
+        var n = results.size();
+        var sumQueue = 0.0;
+        var sumReject = 0.0;
         for (SimulationResult res : results) {
             sumQueue += res.avgQueueLength();
             sumReject += res.rejectionProb();
         }
-        double meanQueue = sumQueue / n;
-        double meanReject = sumReject / n;
+        var meanQueue = sumQueue / n;
+        var meanReject = sumReject / n;
 
         double varQueue = 0.0, varReject = 0.0;
         for (SimulationResult res : results) {
             varQueue += Math.pow(res.avgQueueLength() - meanQueue, 2);
             varReject += Math.pow(res.rejectionProb() - meanReject, 2);
         }
-        double stdQueue = Math.sqrt(varQueue / (n - 1));
-        double stdReject = Math.sqrt(varReject / (n - 1));
+        var stdQueue = Math.sqrt(varQueue / (n - 1));
+        var stdReject = Math.sqrt(varReject / (n - 1));
 
-        double tValue = getTValue(n - 1);
-        double ciQueue = tValue * stdQueue / Math.sqrt(n);
-        double ciReject = tValue * stdReject / Math.sqrt(n);
+        var tValue = getTValue(n - 1);
+        var ciQueue = tValue * stdQueue / Math.sqrt(n);
+        var ciReject = tValue * stdReject / Math.sqrt(n);
 
         System.out.printf("Кількість прогонів: %d\n", n);
         System.out.format("\nДовжина черги\nСередня: %.3f ± %.3f (95%%)\nВідхилення: %.3f\n", meanQueue, ciQueue, stdQueue);
