@@ -5,12 +5,12 @@ public class TextStat {
     public int max = Integer.MIN_VALUE;
     public double avg = 0;
     public int count = 0;
-    public int total = 0;
+    public long total = 0;
 
     public TextStat() {}
 
     public void dump() {
-        System.out.format("[%d; %d] with avg: %2f", min, max, avg);
+        System.out.format("[%d; %d] with avg: %2f\n", min, max, avg);
     }
 
     public TextStat combine(TextStat other) {

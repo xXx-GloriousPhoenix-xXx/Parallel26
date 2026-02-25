@@ -31,6 +31,7 @@ public class TextAnalyzer extends RecursiveTask<TextStat> {
             stat.count++;
         }
         stat.avg = (double)stat.total / stat.count;
+
         return stat;
     }
 
@@ -38,17 +39,7 @@ public class TextAnalyzer extends RecursiveTask<TextStat> {
     protected TextStat compute() {
         var length = end - start;
         if (length < THRESHOLD) {
-            var stat = new TextStat();
-            for (int i = start; i < end; i++) {
-                var word = text.getWord(i);
-                var wordLength = word.length();
-                stat.min = Math.min(stat.min, wordLength);
-                stat.max = Math.max(stat.max, wordLength);
-                stat.total += wordLength;
-                stat.count++;
-            }
-            stat.avg = (double)stat.total / stat.count;
-            return stat;
+            return performSequential();
         }
 
         var mid = start + length / 2;

@@ -34,8 +34,8 @@ public class KeywordSearchHandler {
                     "java"
             );
 
-            System.out.println("=== KEYWORD SEARCH TEST ===");
-            System.out.println("Keywords: " + keywords);
+            System.out.println("=== Пошук за ключовими словами ===");
+            System.out.println("Ключові слова: " + keywords);
 
             long start = System.currentTimeMillis();
 
@@ -43,10 +43,10 @@ public class KeywordSearchHandler {
 
             long end = System.currentTimeMillis();
 
-            System.out.println("Found documents: " + result.size());
+            System.out.println("Знайдені файли: " + result.size());
             result.forEach(p -> System.out.println(p.getFileName()));
 
-            System.out.println("Time: " + (end - start) + " ms");
+            System.out.println("Час: " + (end - start) + " мс");
             System.out.println();
 
         } catch (IOException e) {
