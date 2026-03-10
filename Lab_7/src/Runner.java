@@ -1,4 +1,4 @@
-import MPIs.SingleToSingleMPI;
+import MPIs.*;
 import mpi.MPI;
 import mpi.MPIException;
 
@@ -35,55 +35,40 @@ public static void main(String[] args) throws MPIException {
 
         double ooTime = 0.0, omTime = 0.0, moTime = 0.0, mmTime = 0.0;
 
-        var oo = new SingleToSingleMPI(a, b);
-        // init om
-        // init mo
-        // init mm
+        var oo = new OneToOneMultiplicator(a, b);
+        var om = new OneToManyMultiplicator(a, b);
+        var mo = new ManyToOneMultiplicator(a, b);
+        var mm = new ManyToManyMultiplicator(a, b);
 
         long start, end;
         for (var REPEAT = 0; REPEAT < REPEATS; REPEAT++) {
             // One to One
-            if (task == MASTER) {
-                start = System.nanoTime();
-                oo.multiply();
-                ooTime += (System.nanoTime() - start) / 1e6;
-            }
+            MPI.COMM_WORLD.Barrier();
+
+            start = System.nanoTime();
+            oo.multiply();
+            ooTime += (System.nanoTime() - start) / 1e6;
 
             MPI.COMM_WORLD.Barrier();
 
             // One to Many
             start = System.nanoTime();
-            //
-//            System.err.println("One to Many not implemented");
-            //
-            end = System.nanoTime();
-            if (task == MASTER) {
-                omTime += (end - start) / 1e6;
-            }
+            om.multiply();
+            omTime += (System.nanoTime() - start) / 1e6;
 
             MPI.COMM_WORLD.Barrier();
 
             // Many to One
             start = System.nanoTime();
-            //
-//            System.err.println("Many to One not implemented");
-            //
-            end = System.nanoTime();
-            if (task == MASTER) {
-                moTime += (end - start) / 1e6;
-            }
+            mo.multiply();
+            moTime += (System.nanoTime() - start) / 1e6;
 
             MPI.COMM_WORLD.Barrier();
 
             // Many to Many
             start = System.nanoTime();
-            //
-//            System.err.println("Many to Many not implemented");
-            //
-            end = System.nanoTime();
-            if (task == MASTER) {
-                mmTime += (end - start) / 1e6;
-            }
+            mm.multiply();
+            mmTime += (System.nanoTime() - start) / 1e6;
 
             MPI.COMM_WORLD.Barrier();
         }
