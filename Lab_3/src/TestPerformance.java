@@ -20,14 +20,14 @@ void main() {
     var foxtimes9 = new long[sizeCount];
     var foxtimes25 = new long[sizeCount];
 
-    var csvFilePath = "./Result.csv";
+    var csvFilePath = "./Lab_3/src/Result.csv";
 
     try (var csvWriter = new PrintWriter(new FileWriter(csvFilePath))) {
         csvWriter.println("Size,SeqTime_ms,RibTime4_ms,RibSpeedup4,RibTime9_ms,RibSpeedup9,RibTime25_ms,RibSpeedup25,FoxTime4_ms,FoxSpeedup4,FoxTime9_ms,FoxSpeedup9,FoxTime25_ms,FoxSpeedup25");
 
         System.out.printf("%-8s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s%n",
                 "Size", "SeqTime_ms", "RibTime4_ms", "RibSpeedup4", "RibTime9_ms", "RibSpeedup9",
-                "RibTime25_ms", "RibSpeedup25", "FoxTime4_ms", "FoxSpeedup4", "FoxTime9_ms",
+                "RibTime25_ms", "RibSpeedup25   ", "FoxTime4_ms", "FoxSpeedup4", "FoxTime9_ms",
                 "FoxSpeedup9", "FoxTime25_ms", "FoxSpeedup25");
         System.out.println("-".repeat(180));
 
