@@ -1,4 +1,6 @@
 import java.util.Random;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 public class Matrix {
     public final int[][] matrix;
@@ -40,6 +42,29 @@ public class Matrix {
     }
     public Boolean isSquare() {
         return this.matrix.length == this.matrix[0].length;
+    }
+    public Boolean isEqual(Matrix other) {
+        var a = this.matrix;
+        var b = other.matrix;
+
+        var aRows = a.length;
+        var bRows = b.length;
+        var aCols = a[0].length;
+        var bCols = b[0].length;
+
+        if (aRows != bRows || aCols != bCols) {
+            return false;
+        }
+
+        for (var i = 0; i < aRows; i++) {
+            for (var j = 0; j < aCols; j++) {
+                if (a[i][j] != b[i][j]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
     public Matrix multiplySequential(Matrix other) {
         if (!isMultiplyable(other)) {
@@ -124,7 +149,6 @@ public class Matrix {
         if (!isMultiplyable(other)) {
             throw new IllegalArgumentException("Matrices are not multiplyable");
         }
-
         if (!this.isSquare() || !other.isSquare()) {
             throw new IllegalArgumentException("Matrices must be square");
         }
@@ -141,37 +165,47 @@ public class Matrix {
 
         var blockSize = size / q;
         var aBlocks = splitIntoBlocks(this.matrix, q, blockSize);
-        var bBlocks = splitIntoBlocksTransposed(other.matrix, q, blockSize);
-        var cBlocks = new int[q][q][blockSize][blockSize];
+        var localB   = splitIntoBlocks(other.matrix, q, blockSize);
+        var cBlocks  = new int[q][q][blockSize][blockSize];
+
+        var barrier1 = new CyclicBarrier(threadCount);
+        var barrier2 = new CyclicBarrier(threadCount);
+
+        var nextB = new int[q][q][][];
 
         var threads = new Thread[threadCount];
-        var threadIndex = 0;
+        var exceptions = new RuntimeException[1];
 
         for (var i = 0; i < q; i++) {
             for (var j = 0; j < q; j++) {
                 final var row = i;
                 final var col = j;
 
-                threads[threadIndex] = new Thread(() -> {
-                    var currentABlock = aBlocks[row][col];
-                    var currentBBlock = bBlocks[row][col];
-                    var resultBlock = new int[blockSize][blockSize];
+                threads[row * q + col] = new Thread(() -> {
+                    try {
+                        for (var step = 0; step < q; step++) {
+                            var pivotCol = (row + step) % q;
+                            var aBlock = aBlocks[row][pivotCol];
+                            multiplyBlocks(aBlock, localB[row][col], cBlocks[row][col]);
+                            barrier1.await();
 
-                    for (var k = 0; k < q; k++) {
-                        var leadingCol = (row + k) % q;
-                        var aBlockToMultiply = getABlockForStep(aBlocks, row, leadingCol, k, q);
-                        multiplyBlocks(aBlockToMultiply, currentBBlock, resultBlock);
-                        currentBBlock = getBBlockForNextStep(bBlocks, row, col, k, q);
+                            var destRow = (row - 1 + q) % q;
+                            nextB[destRow][col] = localB[row][col];
+                            barrier2.await();
+
+                            localB[row][col] = nextB[row][col];
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        exceptions[0] = new RuntimeException("Thread interrupted", e);
+                    } catch (BrokenBarrierException e) {
+                        exceptions[0] = new RuntimeException("Barrier broken", e);
                     }
-
-                    cBlocks[row][col] = resultBlock;
                 });
-
-                threads[threadIndex].start();
-                threadIndex++;
             }
         }
 
+        for (var t : threads) t.start();
         for (var t : threads) {
             try {
                 t.join();
@@ -181,12 +215,12 @@ public class Matrix {
             }
         }
 
-        var result = mergeBlocks(cBlocks, q, blockSize);
-        return new Matrix(result);
+        if (exceptions[0] != null) throw exceptions[0];
+
+        return new Matrix(mergeBlocks(cBlocks, q, blockSize));
     }
     private int[][][][] splitIntoBlocks(int[][] matrix, int q, int blockSize) {
         var blocks = new int[q][q][blockSize][blockSize];
-
         for (var i = 0; i < q; i++) {
             for (var j = 0; j < q; j++) {
                 for (var bi = 0; bi < blockSize; bi++) {
@@ -196,47 +230,23 @@ public class Matrix {
                 }
             }
         }
-
         return blocks;
     }
-    private int[][][][] splitIntoBlocksTransposed(int[][] matrix, int q, int blockSize) {
-        var blocks = new int[q][q][blockSize][blockSize];
 
-        for (var i = 0; i < q; i++) {
-            for (var j = 0; j < q; j++) {
-                for (var bi = 0; bi < blockSize; bi++) {
-                    for (var bj = 0; bj < blockSize; bj++) {
-                        blocks[i][j][bi][bj] = matrix[i * blockSize + bi][j * blockSize + bj];
-                    }
-                }
-            }
-        }
-
-        return blocks;
-    }
-    private int[][] getABlockForStep(int[][][][] aBlocks, int row, int leadingCol, int step, int q) {
-        return aBlocks[row][leadingCol];
-    }
-    private int[][] getBBlockForNextStep(int[][][][] bBlocks, int row, int col, int step, int q) {
-        var nextRow = (row - 1 + q) % q;
-        return bBlocks[nextRow][col];
-    }
-    private void multiplyBlocks(int[][] aBlock, int[][] bBlock, int[][] resultBlock) {
-        var size = aBlock.length;
-
+    private void multiplyBlocks(int[][] a, int[][] b, int[][] result) {
+        var size = a.length;
         for (var i = 0; i < size; i++) {
-            for (var j = 0; j < size; j++) {
-                var sum = 0;
-                for (var k = 0; k < size; k++) {
-                    sum += aBlock[i][k] * bBlock[k][j];
+            for (var k = 0; k < size; k++) {
+                if (a[i][k] == 0) continue;
+                for (var j = 0; j < size; j++) {
+                    result[i][j] += a[i][k] * b[k][j];
                 }
-                resultBlock[i][j] += sum;
             }
         }
     }
+
     private int[][] mergeBlocks(int[][][][] blocks, int q, int blockSize) {
         var result = new int[q * blockSize][q * blockSize];
-
         for (var i = 0; i < q; i++) {
             for (var j = 0; j < q; j++) {
                 for (var bi = 0; bi < blockSize; bi++) {
@@ -246,7 +256,6 @@ public class Matrix {
                 }
             }
         }
-
         return result;
     }
 }
