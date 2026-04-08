@@ -232,7 +232,6 @@ public class Matrix {
         }
         return blocks;
     }
-
     private void multiplyBlocks(int[][] a, int[][] b, int[][] result) {
         var size = a.length;
         for (var i = 0; i < size; i++) {
@@ -244,7 +243,6 @@ public class Matrix {
             }
         }
     }
-
     private int[][] mergeBlocks(int[][][][] blocks, int q, int blockSize) {
         var result = new int[q * blockSize][q * blockSize];
         for (var i = 0; i < q; i++) {
