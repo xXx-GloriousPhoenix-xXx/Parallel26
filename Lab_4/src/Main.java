@@ -5,7 +5,7 @@ import text.TextTestHandler;
 
 void main() throws InterruptedException {
 //    TextTestHandler.handle();
-//    MatrixTestHandler.handle();
+    MatrixTestHandler.handle();
 //    CommonWordsHandler.handle();
-    KeywordSearchHandler.handle();
+    // KeywordSearchHandler.handle();
 }

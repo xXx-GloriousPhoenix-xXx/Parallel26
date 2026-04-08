@@ -1,7 +1,7 @@
 package matrix;
 
 import matrix.factory.MatrixGenerator;
-import matrix.multiplication.FoxMultiplicator;
+import matrix.multiplication.MatrixMultiplicator;
 
 public class MatrixTestHandler {
     private static final int[] MATRIX_SIZES = { 1, 16, 81, 256, 625, 1296, 2401, 4096, 6561 };
@@ -16,16 +16,15 @@ public class MatrixTestHandler {
         var generator = new MatrixGenerator();
         var matrix1 = generator.generate(size, 0, 100);
         var matrix2 = generator.generate(size, 0, 100);
-        var multiplicator = new FoxMultiplicator();
-        var threadCount = (int)Math.sqrt(size);
+        var multiplicator = new MatrixMultiplicator();
 
         var s1 = System.nanoTime();
-        var classicResult = multiplicator.multiplyClassic(matrix1, matrix2, threadCount);
+        var _ = multiplicator.multiplySequential(matrix1, matrix2);
         var e1 = System.nanoTime();
         var t1 = (e1 - s1) / 1e6;
 
         var s2 = System.nanoTime();
-        var forkJoinResult = multiplicator.multiplyForkJoin(matrix1, matrix2, threadCount);
+        var _ = multiplicator.multiplyForkJoin(matrix1, matrix2);
         var e2 = System.nanoTime();
         var t2 = (e2 - s2) / 1e6;
 

@@ -8,7 +8,7 @@ public class TextAnalyzer extends RecursiveTask<TextStat> {
     private final LazyText text;
     public final int start;
     public final int end;
-    private static final int THRESHOLD = 100_000;
+    private static final int THRESHOLD = 1_000_000;
 
     public TextAnalyzer(LazyText text, int start, int end) {
         this.text = text;
