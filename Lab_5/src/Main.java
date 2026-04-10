@@ -8,12 +8,7 @@ void main() throws Exception {
     for (var i = 0; i < runs; i++) {
         futures.add(simulationPool.submit(
                 new Simulation(
-                        3,   // кількість каналів
-                        20,   // довжина черги
-                        5000, // кількість заявок
-                        30, // генерацій/сек
-                        7,  // обробок/сек
-                        stats // статистика
+                        3,   20,   5000, 30, 7,  stats
                 )
         ));
     }
@@ -53,10 +48,7 @@ void main() throws Exception {
     simulationPool.shutdown();
 
     var theoretical = TheoreticalModel.calculate(
-            3,   // c
-            20,  // K
-            30,  // lambda
-            7    // mu
+            3,   20, 30, 7
     );
 
     IO.println("\n=== THEORETICAL ===");
