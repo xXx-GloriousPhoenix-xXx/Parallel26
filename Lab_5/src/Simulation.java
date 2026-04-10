@@ -28,10 +28,10 @@ public class Simulation implements Callable<Result> {
 
         BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(queueCapacity);
 
-        ExecutorService servicePool = Executors.newFixedThreadPool(channels);
+        var servicePool = Executors.newFixedThreadPool(channels);
 
-        AtomicInteger rejected = new AtomicInteger(0);
-        AtomicInteger processed = new AtomicInteger(0);
+        var rejected = new AtomicInteger(0);
+        var processed = new AtomicInteger(0);
 
         List<Integer> queueSizes = Collections.synchronizedList(new ArrayList<>());
 
@@ -39,9 +39,8 @@ public class Simulation implements Callable<Result> {
             servicePool.submit(() -> {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
-                        Integer req = queue.take();
+                        var req = queue.take();
 
-                        // время обслуживания
                         Thread.sleep(expRandom(mu));
 
                         processed.incrementAndGet();
