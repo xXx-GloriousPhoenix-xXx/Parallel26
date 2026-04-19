@@ -1,5 +1,9 @@
 package multiplicator;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Helper {
@@ -78,5 +82,24 @@ public class Helper {
         }
 
         System.out.flush();
+    }
+    public static void saveResults(long[] times, int size, int workerCount, String savePath) {
+        var avg = Arrays
+                .stream(times)
+                .average()
+                .orElse(0)
+                / 1_000_000.0;
+        System.out.printf("Avg: %.3f ms", avg);
+
+        var file = new File(savePath);
+        var writeHeader = !file.exists() || file.length() == 0;
+        try (var writer = new FileWriter(file, true)) {
+            if (writeHeader) {
+                writer.write("size;avg_ms;workers\n");
+            }
+            writer.write(String.format("%d;%.3f;%d%n", size, avg, workerCount));
+        } catch (IOException e) {
+            System.err.println("CSV write error: " + e.getMessage());
+        }
     }
 }
