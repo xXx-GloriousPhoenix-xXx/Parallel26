@@ -2,11 +2,6 @@ package multiplicator;
 
 import mpi.MPI;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
-
 public class Collective implements ILab7 {
     private static final String SAVE_PATH = "F:\\Programmes\\Github\\Reps\\Parallel26\\Lab_7\\src\\utils\\collective.csv";
 
