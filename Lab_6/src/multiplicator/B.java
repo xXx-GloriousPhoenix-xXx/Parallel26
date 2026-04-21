@@ -124,7 +124,6 @@ public class B {
             }
 
         } else {
-            // Worker: outer loop — listen for SIZE signals
             while (true) {
                 var controlBuff = new int[2];
                 MPI.COMM_WORLD.Recv(controlBuff, 0, 2, MPI.INT, MASTER, META_TAG);
